@@ -1,21 +1,17 @@
-const {DataTypes} = require('sequelize')
-const sequelize = require('../config/database')
+const { Sequelize } = require('sequelize')
+const path = require('path')
+const dotenv = require('dotenv')
+const env = process.env.NODE_ENV || 'dev'
+const {DB_NAME,DB_USERNAME,DB_PASSWORD} = process.env
 
-const User = sequelize.define("User",{
-    id : { type : DataTypes.INTEGER, primaryKey : true, autoIncrement : true },
-    username : {
-        type : DataTypes.STRING(30),
-        allowNull:false,
-        unique : true,
-        validate : { len : [3,30] },
-        passwordHash : { type: DataTypes.STRING, allowNull : false}
-    },
-    email : {
-        type : DataTypes.STRING,
-        allowNull : false,
-        defaultValue: ''
-    },
-      avatarUrl: { type: DataTypes.STRING, defaultValue: '' },
-      isOnline: { type: DataTypes.BOOLEAN, defaultValue: false },
-      lastSeen: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-})
+const sequelize = new Sequelize(
+    // "new_db_sep-07","postgres","1107",
+    DB_NAME,DB_USERNAME,DB_PASSWORD,
+    {
+        host: "localhost",
+        port: "5432",
+        dialect :'postgres'
+    }
+)
+
+module.exports = sequelize

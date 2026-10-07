@@ -3,8 +3,26 @@ const app = express()
 const {Server} = require('socket.io')
 const http = require('http')
 const { randomUUID } = require('crypto')
+const dotenv = require('dotenv')
+const path = require('path')
 // const { timeStamp } = require('console')
 
+// 1. ENV varialbles setups ==========================
+const env = process.env.NODE_ENV
+const envPath = path.resolve(__dirname,`./env/.env.${env}`)
+const result = dotenv.config({ path : envPath })
+if(result.error){
+    console.log('❌ Failed to load env from: ${envPath}');
+} else {
+    console.log('✅ Successfully loaded env from env/.env.${env}');
+}
+console.log(`🚀 Application starting with NODE_ENV: ${process.env.NODE_ENV}`);
+// ENV varialbles setups ==========================
+const sequelize = require('./config/database')
+
+
+
+// APP Setup =======================================
 const server = http.createServer(app)
 
 const io = new Server(server, {
@@ -66,10 +84,16 @@ io.on('connection',(socket) => {
 
 const funct1 = (req,res,next) =>{
     console.log('api request received')
+    const {username1,password } = process.env
+    console.log(username1,password);
+    
+    console.log(`application running on env ${process.env.NODE_ENV}`);
     next()
  }
 app.use(funct1)
 app.use(express.json())
+app.use('/api',require('./routes')) 
+
 app.get('/api/health-check',(req,res) => {
     res.status(200).json({
         status : "Ok",
@@ -91,6 +115,17 @@ app.post('/api/notifications/send', (req, res) => {
   res.status(201).json(createNotification(String(toUserId), { type, title, body, data }))
 })
 
-server.listen(PORT,()=>{
-    console.log(`server is running at ${PORT}`)
-})
+const dbscript = async () => {
+    try {
+        await sequelize.authenticate()
+        console.log('Database connection established successfully.');
+        await sequelize.sync();
+        server.listen(PORT,()=>{
+            console.log(`server is running at ${PORT}`)
+        })
+    } catch (error) {
+        console.error('Unable to connect to the database:', error);
+    }
+}
+
+dbscript()
