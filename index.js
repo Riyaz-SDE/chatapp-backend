@@ -10,7 +10,7 @@ const path = require('path')
 // 1. ENV varialbles setups ==========================
 const env = process.env.NODE_ENV
 const envPath = path.resolve(__dirname,`./env/.env.${env}`)
-const result = dotenv.config({ path : envPath })
+const result = dotenv.config({ path : envPath })    
 if(result.error){
     console.log('❌ Failed to load env from: ${envPath}');
 } else {
