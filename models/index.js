@@ -10,3 +10,13 @@ const User = sequelize.define('User',{
     isOnline : {type : DataTypes.BOOLEAN, defaultValue : false},
     lastSeen : {type : DataTypes.DATE, defaultValue : DataTypes.NOW},
 })
+
+const room = sequelize.define('room',{
+    id : { type : DataTypes.INTEGER, primaryKey : true, allowNull: false},
+    name : { type : DataTypes.STRING, defaultValue : ''} ,// for group name
+    isGroup : { type : DataTypes.BOOLEAN, defaultValue : false},
+    // FK createdBy <- user.id
+})
+
+
+room.belongsTo(User, { as : 'creator', foreignKey : 'createdBy'})
