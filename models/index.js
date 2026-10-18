@@ -45,6 +45,16 @@ Room.hasMany(Message, { foreignKey : { name : 'roomId', allowNull : false}, onDe
 Message.belongsTo(Room, {foreignKey : { name : 'roomId', allowNull : false}})
 
 const Notification = sequelize.define('Notification', {
-    'id' : { type : DataTypes.INTEGER, primaryKey : true, autoIncrement : true},
-    
+    id : { type : DataTypes.INTEGER, primaryKey : true, autoIncrement : true},
+    type : {type : DataTypes.ENUM('message','room_invite','room_remove'), allowNull : false},
+    body : {type : DataTypes.STRING(300), defaultValue:''},
+    isRead : {type : DataTypes.BOOLEAN, defaultValue: false },
+    readAt : { type : DataTypes.DATE, allowNull : true} 
 })
+
+Notification.belongsTo(User, {as : 'recipient', foreignKey : {name : 'userId', allowNull:false}, onDelete : 'CASCADE'})
+Notification.belongsTo(User, {as : 'actor', foreignKey : 'actorId',  onDelete : 'SET NULL' })
+Notification.belongsTo(Room, { as : 'room', foreignKey : { name : 'roomId'}, onDelete : 'CASCADE'})
+Notification.belongsTo(Message, {as: 'message', foreignKey : 'messageId', onDelete : 'CASCADE' })
+
+module.exports = {sequelize, User, Room, RoomMember, Message, Notification}
