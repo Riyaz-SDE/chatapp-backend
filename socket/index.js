@@ -2,9 +2,9 @@ const { Server } = require('socket.io')
 const {User, RoomMember } = require('../models')
 
 let io = null;
-const connection = new Map()
+const openTabs = new Map()
 
-const connection = new Map()
+// const connection = new Map()
 
 function getRoomId(payload){
     const roomId = Number(payload.roomId)
@@ -46,6 +46,47 @@ function initSocket(httpServer){
                 origin : '*',
                 methods : ['GET','POST']
             }
+    })
+    io.use( async(socket,next) => {
+        try {
+            const token = socket.handshake.auth && socket.handshake.auth.token
+            // socket.user = await authService.authenticate(token)
+            next()
+        } catch (error) {
+            next(new Error('unauthorized'))
+        }
+    })
+
+    io.on('connection', async (socket) => {
+        socket.on('message:send',async (payload) =>{
+            // await message save service
+        })
+        socket.on('message:read',async (payload) =>{
+            // await messageRead save service
+        })
+        socket.on('typing', (payload = {}) =>{
+            // let others know your typing by room and userId
+            // and then emit to(roomId).emit('typing')
+        })
+
+        socket.on('disconnect', () => {
+            const tabs = (openTabs.get(user.id) || 1) - 1;
+            if (tabs > 0) return openTabs.set(user.id, tabs);
+            openTabs.delete(user.id);
+            setPresence(io, user.id, false).catch(console.error);
+        });
+        // 3. Channels: a personal one for notifications, plus one per chat room
+        socket.join(`user:${user.id}`);
+        // RoomMember.findAll({ where: { UserId: user.id }, attributes: ['RoomId'] })
+        // pulls rooms if on user by their id
+        // .then((ms) => socket.join(ms.map((m) => `room:${m.RoomId}`)))
+        // pulls 
+        // .catch(console.error);
+
+        // 4. Presence: online when the first tab opens
+        const tabs = (openTabs.get(user.id) || 0) + 1;
+        openTabs.set(user.xid, tabs);
+        if (tabs === 1) setPresence(io, user.id, true).catch(console.error);
     })
 }
 
