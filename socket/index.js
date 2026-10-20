@@ -80,7 +80,7 @@ function initSocket(httpServer){
         // RoomMember.findAll({ where: { UserId: user.id }, attributes: ['RoomId'] })
         // pulls rooms if on user by their id
         // .then((ms) => socket.join(ms.map((m) => `room:${m.RoomId}`)))
-        // pulls 
+        // pulls
         // .catch(console.error);
 
         // 4. Presence: online when the first tab opens

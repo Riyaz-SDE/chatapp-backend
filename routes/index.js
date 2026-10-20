@@ -9,4 +9,5 @@ const f1 = (req,res,next) =>{
 route.use(f1)
 route.get('/demo/v1',(req,res) => {res.json({ok : true})})
 
+route.use('/message',require('./room.route'))
 module.exports = route
