@@ -11,7 +11,7 @@ const validate = (req,res,next) => {
         status : 'fail',
         error : errors.array().map(err => ({
             field : err.path,
-            message : err.message
+            message : err.msg
         }))
     })
 }

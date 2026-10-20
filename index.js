@@ -90,10 +90,12 @@ const funct1 = (req,res,next) =>{
     
     console.log(`application running on env ${process.env.NODE_ENV}`);
     next()
+    console.log('next function not working');
+    
  }
 app.use(funct1)
 app.use(express.json())
-app.use('/api',require('./routes')) 
+app.use('/dev',require('./routes')) 
 
 app.get('/api/health-check',(req,res) => {
     res.status(200).json({

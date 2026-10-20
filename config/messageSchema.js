@@ -5,12 +5,14 @@ const messageSchema = checkSchema({
         isInt : {
             errorMessage : "user id must be number"
         },
+        bail: true,
         toInt : true
     },
     targetId : {
         isInt : {
             errorMessage : "user id must be number"
         },
+        bail: true,
         toInt : true,
         custom : {
             options : (targetId, {req}) => {
@@ -25,6 +27,7 @@ const messageSchema = checkSchema({
         isString : {
             errorMessage : "message must be string"
         },
+        bail: true,
         isLength:{
             options : { min: 1, max:300 }
         }
