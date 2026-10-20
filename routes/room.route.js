@@ -3,6 +3,7 @@
  */
 
 const messageSchema = require('../config/messageSchema');
+const validate = require('../config/validate');
 
 const router = require('express').Router()
 
@@ -12,9 +13,10 @@ router.use((req,res,next)=>{
 })
 
 // validate input data - userId 
-router.post('/dm',
-    [messageSchema,validator]
-    ,(req,res) => {
-        res.status(200).json({message : 'done'})
-})
+// router.post('/dm',
+//     [messageSchema,validate]
+//     ,(req,res) => {
+//         res.status(200).json({message : 'done'})
+// })
 
+module.exports = router
