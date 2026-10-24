@@ -5,6 +5,7 @@ const http = require('http')
 const { randomUUID } = require('crypto')
 const dotenv = require('dotenv')
 const path = require('path')
+const { errHandler } = require('./routes/errorhalder')
 // const { timeStamp } = require('console')
 
 // 1. ENV varialbles setups ==========================
@@ -96,7 +97,7 @@ const funct1 = (req,res,next) =>{
 app.use(funct1)
 app.use(express.json())
 app.use('/dev',require('./routes')) 
-
+app.use(errHandler)
 app.get('/api/health-check',(req,res) => {
     res.status(200).json({
         status : "Ok",

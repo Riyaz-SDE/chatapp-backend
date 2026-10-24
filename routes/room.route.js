@@ -6,6 +6,8 @@ const { Op } = require('sequelize');
 const messageSchema = require('../config/messageSchema');
 const validate = require('../config/validate');
 const { RoomMember, Room, User } = require('../models');
+const { getIo } = require('../socket');
+const { AppError } = require('./errorhalder');
 
 const router = require('express').Router()
 
@@ -21,54 +23,73 @@ function serialize(room, userId) {
   r.displayName = r.isGroup ? r.name : (other && other.username) || 'Unknown';
   return r;
 }
+const getMembership = (roomId, userId) => RoomMember.findOne({ where: { RoomId: roomId, UserId: userId } });
+async function assertMember(roomId, userId) {
+  const m = await getMembership(roomId, userId);
+  if (!m) throw new AppError(403, 'You are not a member of this room');
+  return m;
+}
+async function getById(roomId, userId) {
+  await assertMember(roomId, userId);
+  const room = await Room.findByPk(roomId, { include: [memberInclude] });
+  if (!room) throw new AppError(404, 'Room not found');
+  return serialize(room, userId);
+}
 // validate input data - userId 
 router.post('/dm',
     messageSchema,validate
-    , async (req,res) => {
-        // res.status(200).json({message : 'done'})
-        // check target id exist
-        const userId = req.userId
-        const targetId = req.body.targetId
-        /*1. validate same both are same id */
-        if (userId === targetId) throw new AppError(400, 'Cannot start a chat with yourself')
-        /*2. validation targetId exist */
-        if (targetId.length && (await User.count({ where: { id: targetId } })) !== targetId.length) {
-            throw new AppError(400, 'One or more users do not exist');
+    , async (req,res,next) => {
+        try {
+            // testing purpose // res.status(200).json({message : 'done'})
+            
+            // vaariable intialization
+            const userId = req.userId
+            const targetId = req.body.targetId
+
+            /*1. validate same both are same id */
+            if (userId === targetId) throw new AppError(400, 'Cannot start a chat with yourself')
+
+            /*2. validation targetId exist */
+            // if (targetId.length && (await User.count({ where: { id: targetId } })) !== targetId.length) {
+            //     throw new AppError(400, 'One or more users do not exist');
+            // }
+            const target = await User.findByPk(targetId);
+            if (!target) throw new AppError('User not found', 404);
+
+            // find rooms with both members
+            const members = await Room.findAll({
+                where : { isGroup : false}, // room id
+                include : [{ // user id
+                    model : User, as : 'members', attributes:['id'], through : { attributes : []},
+                    where : { id : { [Op.in] : [ userId, targetId ] } },
+                }]
+            })
+            // The query fetches every 1-to-1 room containing at least one of the two users
+            /* find existing room*/
+            const existing = members.find( e => e.members.length === 2)
+
+            // this will send dm if room exist
+            if(existing) {
+               const result = await getById(userId,targetId)
+                res.status(201).json(result)
+            }
+
+            // this will send create room and send
+            // starts a transaction. Everything inside either all succeeds or all gets undone.
+            const newRoom = await sequelize.transaction(async (t) => {
+                const r = await Room.create({ isGroup: false, createdBy: userId }, { transaction: t });
+                await RoomMember.bulkCreate(
+                    [{ RoomId: r.id, UserId: userId }, { RoomId: r.id, UserId: targetId }],
+                    { transaction: t });
+                    return r;
+            });
+
+            [userId, targetId].forEach((id) => getIo.joinRoom(id, newRoom.id));
+            res.status(200).json(getById(newRoom.id, userId))
+        } catch (error) {
+            console.log(error);
+            next(error)
         }
-        // find rooms with both members
-        const members = await Room.findAll({
-            where : { isGroup : false}, // room id
-            include : [{ // user id
-                model : User, as : 'members', attributes:['id'], through : { attributes : []},
-                where : { id : { [Op.in] : [ userId, targetId ] } },
-            }]
-        })
-        /* find existing room*/
-        const existing = members.find( e => e.members.length === 2)
-        let roomId = ''
-        const result = ''
-        if(existing) {
-            roomId = existing.id
-            const checkMembership = await RoomMember.findOne({ where: { RoomId: roomId, UserId: userId } });
-            if (!checkMembership) throw new AppError(403, 'You are not a member of this room');
-            const room = await Room.findByPk(roomId, { include: [
-                {model: User,
-                as: 'members',
-                attributes: ['id', 'username', 'avatarUrl', 'isOnline', 'lastSeen'],
-                through: { attributes: ['role'] },}
-            ] });
-            if (!room) throw new AppError(404, 'Room not found');
-            result = serialize(room,userId)
-            res.status(201).json(result)
-        }
-        /* if exist send dm*/
-        const room = await sequelize.transaction(async (t) => {
-        const r = await Room.create({ isGroup: false, createdBy: actor.id }, { transaction: t });
-        await RoomMember.bulkCreate([{ RoomId: r.id, UserId: actor.id }, { RoomId: r.id, UserId: otherId }], { transaction: t });
-        res.status(201).json(r);
-        });
-        [actor.id, otherId].forEach((id) => realtime.joinRoom(id, room.id));
-        res.status(201).json(getById(room.id, actor.id))
         // return room
         // send message
 })

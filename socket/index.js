@@ -28,7 +28,7 @@ function withAck(fn){
     }
 }
 
-function setPresence(io, userId, isOnline){
+async function setPresence(io, userId, isOnline){
     const lastSeen = new Date()
     const response = await User.update({isOnline,lastSeen}, {where : {id : userId}})
     const memberships = await RoomMember.findAll({
