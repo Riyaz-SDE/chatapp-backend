@@ -17,8 +17,12 @@ const inputSchemaforDM = {
         toInt : true,
         custom : {
             options : (targetId, {req}) => {
+                if (Array.isArray(targetId)){
+                    throw new Error('id must be single')
+                    // return { errorMessage : "user id must be number
+                }
                 if(req.body.userId === targetId){
-                    throw new Error('you connot perform this action')
+                    throw new Error('you cannot perform this action')
                 }
                 return true
             }

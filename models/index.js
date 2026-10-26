@@ -1,5 +1,5 @@
 const {DataTypes, DATE} = require('sequelize')
-const sequelize = require('../config/database')
+const sequelize = require('../config-code/database')
 const { text } = require('express')
 
 const User = sequelize.define('User',{
@@ -13,7 +13,7 @@ const User = sequelize.define('User',{
 })
 
 const Room = sequelize.define('Room',{
-    id : { type : DataTypes.INTEGER, primaryKey : true, allowNull: false},
+    id : { type : DataTypes.INTEGER, primaryKey : true, allowNull: false, autoIncrement : true},
     name : { type : DataTypes.STRING, defaultValue : ''} ,// for group name
     isGroup : { type : DataTypes.BOOLEAN, defaultValue : false},
     // FK createdBy <- user.id
