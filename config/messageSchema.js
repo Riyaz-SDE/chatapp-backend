@@ -1,6 +1,7 @@
 const { checkSchema } = require("express-validator");
 
-const messageSchema = checkSchema({
+
+const inputSchemaforDM = {
     userId : {
         isInt : {
             errorMessage : "user id must be number"
@@ -32,6 +33,7 @@ const messageSchema = checkSchema({
             options : { min: 1, max:300 }
         }
     }
-})
+}
+const messageSchema = checkSchema(inputSchemaforDM)
 
 module.exports = messageSchema
