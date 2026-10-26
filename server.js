@@ -4,6 +4,7 @@ const app = require('./index')
 // const server = http.createServer(app)
 const {Server} = require('socket.io')
 const {sequelize, User} = require('./models')
+const { initSocket } = require('./socket')
 const PORT = 3000
 
 
@@ -14,12 +15,13 @@ const dbscript = async () => {
         await sequelize.sync();
         // await User.update({ isOnline: false }, { where: { isOnline: true } });
         const server = http.createServer(app)
-        const io = new Server(server, {
-            cors : {
-                origin : '*',
-                methods : ['GET','POST']
-            }
-        })
+        // const io = new Server(server, {
+        //     cors : {
+        //         origin : '*',
+        //         methods : ['GET','POST']
+        //     }
+        // })
+        initSocket(server)
         server.listen(PORT,()=>{
             console.log(`server is running at ${PORT}`)
         })
