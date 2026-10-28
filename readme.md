@@ -30,3 +30,4 @@ today 30-09-26 learned about message socket pipeline
 today 01-09-26 nil
 today 05-09-26 nil
 23-10-26 nil
+28-10-26 room joining feature manually tested and completed
