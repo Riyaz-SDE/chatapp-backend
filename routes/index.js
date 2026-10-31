@@ -10,6 +10,6 @@ router.use(f1)
 router.get('/demo/v1',(req,res) => {res.json({ok : true})})
 
 // router.use('/api')
-router.use('/message',require('./room.route'))
-router.use('/',protected,require('../feature/auth/auth.route'))
+router.use('/message',protected,require('./room.route'))
+router.use('/auth',require('../feature/auth/auth.route'))
 module.exports = router

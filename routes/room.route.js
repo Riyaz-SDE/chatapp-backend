@@ -2,7 +2,7 @@
      * this file used for 1-1 message post retrival
      */
 const { Op } = require('sequelize');
-const messageSchema = require('../config-code/messageSchema');
+const messageSchema = require('../config-code/roomJoinDmSchema');
 const validate = require('../config-code/validate');
 const { RoomMember, Room, User, sequelize } = require('../models');
 const { getIo } = require('../socket');
@@ -10,11 +10,7 @@ const { AppError } = require('./errorhalder');
 const logger = require('../config-code/logger');
 
 const router = require('express').Router()
-// Auth middleware
-router.use((req,res,next)=>{
-    console.log('authservice');
-    next()
-})
+// Auth middleware - seperated
 
 // query includes member 
 const memberInclude = {
