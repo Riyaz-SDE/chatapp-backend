@@ -86,12 +86,12 @@ console.log(`🚀 Application starting with NODE_ENV: ${process.env.NODE_ENV}`);
 
 const funct1 = (req,res,next) =>{
     console.log('api request received')
-    const {username1,password } = process.env
-    console.log(username1,password);
+    const {username1,password,NODE_ENV } = process.env
+    // console.log('running on environment',NODE_ENV);
     
     console.log(`application running on env ${process.env.NODE_ENV}`);
     next()
-    console.log('next function not working');
+    // console.log('next function not working');
     
  }
 app.use(funct1)

@@ -50,6 +50,8 @@ function initSocket(httpServer){
     io.use( async(socket,next) => {
         try {
             const token = socket.handshake.auth && socket.handshake.auth.token
+            console.log(token);
+            
             // socket.user = await authService.authenticate(token)
               // Temporary structural fallback for testing if service is missing:
             if (!socket.user) socket.user = { id: 1 }; 

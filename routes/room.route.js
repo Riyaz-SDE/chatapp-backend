@@ -76,7 +76,7 @@ router.post('/dm',messageSchema,validate,
 
             logger.debug(`target id exist validation`) // initialization
             const target = await User.findByPk(targetId);
-            if (!target) throw new AppError('User not found', 404);
+            if (!target) throw new AppError( 404,'User not found');
             logger.info(`target id exist validation succsess`) // completed
             
             logger.debug(`rooms exist check`) // initialization

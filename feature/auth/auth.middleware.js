@@ -1,11 +1,12 @@
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
-const { AppError } = require('../routes/errorhalder');
+const { User } = require('../../models');
+const { AppError } = require('../../routes/errorhalder');
 
 module.exports = async (req, res, next) => {
     try {
         //middleware logic
-        console.log('auth middleware');
+        console.log('auth middleware current ');
+        next()
     } catch (error) {
         next(error)
     }
