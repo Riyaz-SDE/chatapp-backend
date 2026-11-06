@@ -55,12 +55,12 @@ return serialize(room, userId);
 
 //  getMembership <- assertMember <- getById <-  
 // validate input data - userId 
-router.post('/dm',messageSchema,validate, 
+router.post('/join',messageSchema,validate, 
     async (req,res,next) => {
         try {
             logger.info('DM authenticalled and enter bussiness logic')
             
-            // Main two variable - ID's variable intialization
+            //0.1 Main two variable - ID's variable intialization
             const userId = req.body.userId
             const targetId = req.body.targetId
             logger.debug(`ids are ${userId} ${targetId}`)
@@ -89,20 +89,24 @@ router.post('/dm',messageSchema,validate,
                 }]
             })
             // The query fetches every 1-to-1 room containing at least one of the two users
+
             /* find existing room*/
             const existing = members.find( e => e.members.length === 2)
             logger.debug(`is room exist ${existing}`)
             
             // this will send dm if room exist
             if(existing) {
+                logger.info('room already exist')
                 logger.debug(`getById func invoked`)
                 const result = await getById(existing.id,userId)
                 return res.status(201).json(result) //complete 1
             }
+            logger.info(`room not exist`)  // complete 2
             logger.debug(`room not exist ${existing}`)  // complete 2
             
             // this will send create room and send
             // starts a transaction. Everything inside either all succeeds or all gets undone.
+            logger.info(`new room create transaction invoked`)
             logger.debug(`new room create transaction invoked ${userId}`)
 
             const newRoom = await sequelize.transaction(async (t) => {

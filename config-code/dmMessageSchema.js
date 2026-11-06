@@ -38,6 +38,6 @@ const inputSchemaforMessage = {
         }
     }
 }
-const messageSchema = checkSchema(inputSchemaforDM)
+const messageSchema = checkSchema(inputSchemaforMessage)
 
-module.exports = inputSchemaforMessage
+module.exports = messageSchema

@@ -1,20 +1,20 @@
-const inputSchemaforMessage = require('../config-code/dmMessageSchema')
+const messageSchema = require('../config-code/dmMessageSchema')
 const logger = require('../config-code/logger')
 const { Message, RoomMember } = require('../models')
 const { getIo } = require('../socket')
 
 const router = require('express').Router()
 
-router.post('/send-message',inputSchemaforMessage, async(req,res,next) => {
+router.post('/send',messageSchema, async(req,res,next) => {
     try {
         logger.info('/send-message')
-        const {roomId,userId,message} = req.body
+        const {roomId,userId,text} = req.body
         // id roomdId message
 
         await assertMember(roomId,userId)
         // validate
         // save message
-        const message = Message.create({roomId : roomId, senderId : userId, message : message})
+        const message = Message.create({roomId : roomId, senderId : userId, message : text})
         await RoomMember.update({lastMessageReadId : message.id}, {where : {roomId : roomId, userId : userId}})
 
         const sender = {userId : userId,}
