@@ -36,7 +36,7 @@ const getMembership = (roomId, userId) => {
 async function assertMember(roomId, userId) {
     logger.info(`assert membership function initialized ${roomId} ${userId}`)
     const m = await RoomMember.findOne({ where: { roomId: roomId, userId: userId } });
-    console.log(m);
+    // console.log(m);
 
     if (!m) throw new AppError(403, 'You are not a member of this room');
     return m;
@@ -76,9 +76,9 @@ router.post('/join',messageSchema,validate,
 
             logger.debug(`target id exist validation`) // initialization
             const target = await User.findByPk(targetId);
-            if (!target) throw new AppError( 404,'User not found');
+            if (!target) throw new AppError( 404 ,'User not found');
             logger.info(`target id exist validation succsess`) // completed
-            
+
             logger.debug(`rooms exist check`) // initialization
             // find rooms with both members
             const members = await Room.findAll({
@@ -91,13 +91,19 @@ router.post('/join',messageSchema,validate,
             // The query fetches every 1-to-1 room containing at least one of the two users
 
             /* find existing room*/
+            // console.log('=======',members,'=======');
+            
             const existing = members.find( e => e.members.length === 2)
             logger.debug(`is room exist ${existing}`)
+            console.log('=======',existing.id,'=======');
+            
             
             // this will send dm if room exist
             if(existing) {
                 logger.info('room already exist')
                 logger.debug(`getById func invoked`)
+                const tmep = existing.id
+                logger.info(`our room id is ${tmep}`)
                 const result = await getById(existing.id,userId)
                 return res.status(201).json(result) //complete 1
             }
@@ -112,7 +118,7 @@ router.post('/join',messageSchema,validate,
             const newRoom = await sequelize.transaction(async (t) => {
                 const r = await Room.create({ isGroup: false, createdBy: userId }, { transaction: t });
                 const result = r.toJSON()
-                console.log(result,'=========');
+                // console.log(result,'=========');
                 
                 logger.debug(` $ {result}`)
                 await RoomMember.bulkCreate(
@@ -120,7 +126,7 @@ router.post('/join',messageSchema,validate,
                     { transaction: t });
                     return r;
             });
-            console.log(newRoom);
+            // console.log(newRoom);
             
             logger.info(`new room created transaction created`)
             console.log(newRoom.id);

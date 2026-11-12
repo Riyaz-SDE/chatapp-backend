@@ -14,8 +14,9 @@ router.post('/send',messageSchema, async(req,res,next) => {
         await assertMember(roomId,userId)
         // validate
         // save message
-        const message = Message.create({roomId : roomId, senderId : userId, message : text})
-        await RoomMember.update({lastMessageReadId : message.id}, {where : {roomId : roomId, userId : userId}})
+        const message = await Message.create({roomId : roomId, senderId : userId, message : text})
+        await RoomMember.update({lastMessageReadId : message.id},
+            {where : {roomId : roomId, userId : userId}})
 
         const sender = {userId : userId,}
         getIo.to(roomId).emit('message:new',{...message.toJSON(),sender})

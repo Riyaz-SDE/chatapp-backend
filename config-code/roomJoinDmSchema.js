@@ -28,15 +28,15 @@ const inputSchemaforDM = {
             }
         }
     },
-    message : {
-        isString : {
-            errorMessage : "message must be string"
-        },
-        bail: true,
-        isLength:{
-            options : { min: 1, max:300 }
-        }
-    }
+    // message : {
+    //     isString : {
+    //         errorMessage : "message must be string"
+    //     },
+    //     bail: true,
+    //     isLength:{
+    //         options : { min: 1, max:300 }
+    //     }
+    // }
 }
 const messageSchema = checkSchema(inputSchemaforDM)
 
