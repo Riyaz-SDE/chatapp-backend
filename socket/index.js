@@ -108,9 +108,12 @@
     }
 
     function getIo(){
+        logger.info('logger function')
         if(!io){
+            logger.info('logger socket not intialized')
             throw new Error('Socket.io must be initialezed')
         }
+        logger.info('logger socket intialized')
         return io
     }
 

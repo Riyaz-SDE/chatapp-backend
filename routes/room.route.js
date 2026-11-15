@@ -95,7 +95,7 @@ router.post('/join',messageSchema,validate,
             
             const existing = members.find( e => e.members.length === 2)
             logger.debug(`is room exist ${existing}`)
-            console.log('=======',existing.id,'=======');
+            console.log('=======',existing?.id,'=======');
             
             
             // this will send dm if room exist
@@ -105,6 +105,9 @@ router.post('/join',messageSchema,validate,
                 const tmep = existing.id
                 logger.info(`our room id is ${tmep}`)
                 const result = await getById(existing.id,userId)
+                getIo().to(`user:${targetId}`).emit('room:join',{
+                    sender:userId, receiver: targetId
+                })
                 return res.status(201).json(result) //complete 1
             }
             logger.info(`room not exist`)  // complete 2
@@ -131,11 +134,41 @@ router.post('/join',messageSchema,validate,
             logger.info(`new room created transaction created`)
             console.log(newRoom.id);
             // [userId, targetId].forEach((id) => getIo.joinRoom(id, newRoom.id));
-            [userId, targetId].forEach(
-                (id) => getIo().in(`user:${id}`).socketsJoin(`room:${newRoom.id}` ) 
-                    );
+            logger.info(`room socket gets notified on user id ${targetId} ${userId}`)
+            // [userId, targetId].forEach(
+                
+            //     (id) => {
+            //         logger.info(`inside socket function with variables ${id} ${newRoom.id}`)
+            //         getIo().to(`user:${id}`).emit(`room:join`,{
+            //             sender: userId,
+            //             receiver: targetId
+            //         }) }
+            //         );
+            logger.info('Preparing room:join notifications');
+
+            console.log({
+                userId,
+                targetId,
+                newRoomId: newRoom.id,
+                ioExists: !!getIo()
+            });
+
+            const io = getIo();
+
+            if (!io) {
+                throw new Error('Socket.IO instance is not initialized');
+            }
+
+            for (const id of [userId, targetId]) {
+                console.log('Emitting room:join to:', id);
+
+                io.to(`user:${id}`).emit('room:join', {
+                    sender: userId,
+                    receiver: targetId
+                });
+            }
             const result = await getById(newRoom.id, userId);
-            res.status(200).json(getById(result))
+            res.status(200).json(result)
         } catch (error) {
             console.log(error);
             next(error)
