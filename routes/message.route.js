@@ -2,29 +2,10 @@ const messageSchema = require('../config-code/dmMessageSchema')
 const logger = require('../config-code/logger')
 const { Message, RoomMember } = require('../models')
 const { getIo } = require('../socket')
-
+const controller = require('../controllers/message.controller-v2')
 const router = require('express').Router()
 
-router.post('/send',messageSchema, async(req,res,next) => {
-    try {
-        logger.info('/send-message')
-        const {roomId,userId,text} = req.body
-        // id roomdId message
-
-        await assertMember(roomId,userId)
-        // validate
-        // save message
-        const message = await Message.create({roomId : roomId, senderId : userId, message : text})
-        await RoomMember.update({lastMessageReadId : message.id},
-            {where : {roomId : roomId, userId : userId}})
-
-        const sender = {userId : userId,}
-        getIo.to(roomId).emit('message:new',{...message.toJSON(),sender})
-        // notfication
-    } catch (error) {
-        
-    }
-})
+router.post('/send',messageSchema, controller.messageSend)
 
 
 async function assertMember(roomId, userId) {
