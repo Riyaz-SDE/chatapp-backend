@@ -13,4 +13,5 @@ router.get('/demo/v1',(req,res) => {res.json({ok : true})})
 router.use('/room',protected,require('./room.route'))
 router.use('/dm',protected,require('./message.route'))
 router.use('/auth',require('../feature/auth/auth.route'))
+router.use('/notification',protected,require('./notification.route'))
 module.exports = router
