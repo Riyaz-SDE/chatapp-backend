@@ -57,6 +57,25 @@ exports.messageSend = async (req, res, next) => {
             logger.warn('Socket.IO instance not initialized; skipping real-time emit');
         }
 
+        // 4. this will store roomMembers, roomId&groupDetails
+        const [members, room] = await Promise.all([
+            // this one return userId in particular room
+            RoomMember.findAll({ where: { RoomId: roomId }, attributes: ['UserId'] }),
+            // this one return roomId is group or not
+            Room.findByPk(roomId, { attributes: ['id', 'isGroup'] }),
+        ]);
+
+        // preview text processing
+        const preview = text.length > 100 ? `${text.slice(0, 100)}…` : text;
+        // notification service
+        await notificationService.notifyMany(members.map((m) => m.UserId), {
+            type: 'message',
+            actor: sender, 
+            roomId,
+            messageId: message.id,
+            body: room.isGroup ? `${user.username}: ${preview}` : preview,
+        });
+
         return res.status(201).json(payload);
     } catch (error) {
         logger.error(error);
