@@ -56,4 +56,4 @@ exports.markRead = async(req,res) =>{
     }
     res.json(n)
 
-}
+}  

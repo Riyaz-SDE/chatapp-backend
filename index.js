@@ -27,17 +27,22 @@ const funct1 = (req,res,next) =>{
     console.log('api request received')
     const {username1,password,NODE_ENV } = process.env
     // console.log('running on environment',NODE_ENV);
-    
     console.log(`application running on env ${process.env.NODE_ENV}`);
     next()
     // console.log('next function not working');
     
  }
-app.use(funct1)
-app.use(express.json())
 
+app.use(funct1)
+/* Start ==================================== */
+app.use(express.json())
+/**
+ * Main Route Code
+*/
 app.use('/dev',require('./routes')) 
+
 app.use(errHandler)
+/* End ==================================== */
 
 app.get('/api/health-check',(req,res) => {
     res.status(200).json({
@@ -52,13 +57,13 @@ app.get('api/notification',(req,res) =>{
     res.json(db.get(userId) || [])
 })
 
-app.post('/api/notifications/send', (req, res) => {
-  const { toUserId, type, title, body, data } = req.body
-  if (!toUserId || !title) {
-    return res.status(400).json({ message: 'toUserId and title are required' })
-  }
-  res.status(201).json(createNotification(String(toUserId), { type, title, body, data }))
-})
+// app.post('/api/notifications/send', (req, res) => {
+//   const { toUserId, type, title, body, data } = req.body
+//   if (!toUserId || !title) {
+//     return res.status(400).json({ message: 'toUserId and title are required' })
+//   }
+//   res.status(201).json(createNotification(String(toUserId), { type, title, body, data }))
+// })
 
 
 

@@ -31,3 +31,10 @@ today 01-09-26 nil
 today 05-09-26 nil
 23-10-26 nil
 28-10-26 room joining feature manually tested and completed
+
+
+
+folder structure 
+
+server.js file maintains all configration inside it like 
+    socket(socket>index.js)+server(index.js)

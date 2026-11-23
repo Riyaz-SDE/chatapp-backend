@@ -5,7 +5,9 @@ const { getIo } = require('../socket')
 const controller = require('../controllers/message.controller-v2')
 const router = require('express').Router()
 
-router.post('/send',messageSchema, controller.messageSend)
+router.get('/:roomId/message',messageSchema, controller.messageSend) // message pagination
+router.post('/:roomId/message',messageSchema, controller.messageSend) // send message
+router.delete('/message/:messageId',messageSchema, controller.messageSend) // read message
 
 
 async function assertMember(roomId, userId) {

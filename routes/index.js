@@ -9,9 +9,16 @@ const f1 = (req,res,next) =>{
 router.use(f1)
 router.get('/demo/v1',(req,res) => {res.json({ok : true})})
 
-// router.use('/api')
-router.use('/room',protected,require('./room.route'))
-router.use('/dm',protected,require('./message.route'))
+
+/** auth api */ // needs to be finished
 router.use('/auth',require('../feature/auth/auth.route'))
+
+/** room apis */  // almost done
+router.use('/room',protected,require('./room.route'))
+
+/** message api */  // almost done
+router.use('/room/',protected,require('./message.route'))
+
+/** notification api */  // almost done
 router.use('/notification',protected,require('./notification.route'))
 module.exports = router

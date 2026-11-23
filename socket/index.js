@@ -5,8 +5,6 @@ const logger = require('../config-code/logger');
 let io = null;
 const openTabs = new Map()
 
-// const connection = new Map()
-
 function getRoomId(payload){
     const roomId = Number(payload.roomId)
     if(!Number.isInteger(roomId) || roomId < 1){
@@ -50,6 +48,7 @@ function initSocket(httpServer){
                 methods : ['GET','POST']
             }
     })
+
     io.use(async (socket,next) => {
         try {
             console.log('socket auth attempt');
@@ -75,30 +74,48 @@ function initSocket(httpServer){
         // FIXED: Extract user directly out of the authorized socket session
         const user = socket.user; 
         logger.info(`socket connected with user ${user}`)
+
+        /* message send feature */
         socket.on('message:send',async (payload) =>{
             // await message save service
         })
+
+        /* message read feature */
         socket.on('message:read',async (payload) =>{
             // await messageRead save service
         })
+
+        /* message typing indicator */
         socket.on('typing', (payload = {}) =>{
+            const roomKey = `room:${payload.roomId}`
+            if(socket.rooms.has(roomKey)){
+                socket.to(roomKey).emit('typing',{
+                    roomId: Number(payload.roomId), 
+                    userId: user.id, 
+                    username: user.username, 
+                    isTyping: !!p.isTyping
+                })
+            }
             // let others know your typing by room and userId
             // and then emit to(roomId).emit('typing')
         })
 
         socket.on('disconnect', () => {
             const tabs = (openTabs.get(user.id) || 1) - 1;
+            // tabs check user has 1 or more connection
+            // condition trigers when user has 2 connection
             if (tabs > 0) return openTabs.set(user.id, tabs);
+            // below code executes when user has one tab
             openTabs.delete(user.id);
             setPresence(io, user.id, false).catch(console.error);
         });
         // 3. Channels: a personal one for notifications, plus one per chat room
         socket.join(`user:${user.id}`);
-        // RoomMember.findAll({ where: { UserId: user.id }, attributes: ['RoomId'] })
+        RoomMember.findAll({ where: { UserId: user.id }, attributes: ['RoomId'] })
         // pulls rooms if on user by their id
-        // .then((ms) => socket.join(ms.map((m) => `room:${m.RoomId}`)))
+        .then((ms) => socket.join(ms.map((m) => `room:${m.RoomId}`)))
         // pulls
-        // .catch(console.error);
+        .catch(console.error);
 
         // 4. Presence: online when the first tab opens
         const tabs = (openTabs.get(user.id) || 0) + 1;
