@@ -3,14 +3,7 @@ const logger = require("../config-code/logger");
 const { User, Room, sequelize, RoomMember } = require("../models");
 const { AppError } = require("../routes/errorhalder");
 const { getIo } = require("../socket");
-
-// Query includes member
-const memberInclude = {
-    model: User,
-    as: 'members',
-    attributes: ['id', 'name', 'avatarUrl', 'isOnline', 'lastSeen'],
-    through: { attributes: ['role'] },
-};
+const roomService = require('../feature/room/room.service') 
 
 // Convert into JSON and format it
 function serialize(room, userId) {
@@ -134,3 +127,33 @@ exports.createOrDm = async (req, res, next) => {
         next(error);
     }
 };
+
+
+/**
+ * working well but has some bugs on data formatting and pagination 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
+exports.getlist = async(req,res,next) =>{
+    try {
+        const data = req.query.userId
+        console.log(data);
+        
+        logger.info(data)
+        // res.json({msg : ''})
+        const response = await roomService.getChatListByUserId(data)
+        res.json(response || {})
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.getRoom =  async (req,res,next) => {
+    try {
+        const roomId = req.params.roomId
+        const data = await roomService.getRoomData(roomId)
+    } catch (error) {
+        next(error)
+    }
+}

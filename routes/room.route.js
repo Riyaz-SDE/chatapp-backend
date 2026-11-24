@@ -14,7 +14,8 @@ const controller = require('../controllers/room.controller-v2')
 
 //  getMembership <- assertMember <- getById <-  
 // validate input data - userId 
-router.get('/',messageSchema,validate,controller.createOrDm )
+router.get('/',controller.getlist)
+router.get('/:roomId',controller.get)
 router.post('/',messageSchema,validate,controller.createOrDm )
 
 module.exports = router

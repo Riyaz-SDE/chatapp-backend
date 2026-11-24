@@ -17,7 +17,7 @@ router.use('/auth',require('../feature/auth/auth.route'))
 router.use('/room',protected,require('./room.route'))
 
 /** message api */  // almost done
-router.use('/room/',protected,require('./message.route'))
+router.use('/message',protected,require('./message.route'))
 
 /** notification api */  // almost done
 router.use('/notification',protected,require('./notification.route'))
