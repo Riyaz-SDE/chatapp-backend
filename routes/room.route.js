@@ -13,9 +13,9 @@ const router = require('express').Router()
 const controller = require('../controllers/room.controller-v2')
 
 //  getMembership <- assertMember <- getById <-  
-// validate input data - userId 
-router.get('/',controller.getlist)
-router.get('/:roomId',controller.get)
+// validate input data - userId
+router.get('/',controller.getlist) // it uses query with data userId
+router.get('/:roomId',controller.getRoom)
 router.post('/',messageSchema,validate,controller.createOrDm )
 
 module.exports = router

@@ -152,7 +152,12 @@ exports.getlist = async(req,res,next) =>{
 exports.getRoom =  async (req,res,next) => {
     try {
         const roomId = req.params.roomId
-        const data = await roomService.getRoomData(roomId)
+        console.log(req.customToken);
+        const userId = req.customToken
+        console.log(`room id and token is ${roomId} ${userId}`);
+        
+        const data = await roomService.getRoomData(roomId,userId)
+        res.json(data)
     } catch (error) {
         next(error)
     }

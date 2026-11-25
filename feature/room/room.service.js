@@ -55,9 +55,40 @@ async function getChatListByUserId(userId) {
 
     
 }
-async function getRoomData(roomId) {
+async function getRoomData(roomId,userId) {
     // assermemeber
+    const isMember = await RoomMember.findOne({where : {roomId,userId}})
+    console.log(isMember);
+    
+    if(!isMember) throw new Error('not an member')
     // check roomId
+    // query planing
+        // 1 retrive room details by room id -> createdBy, isGroup
+
+        const roomDetails = await Room.findOne({where : {id : roomId}})
+        // 2 room member details by room id -> member ids except you
+        console.log('roomdetails----',roomDetails);
+        // console.log('roomdetails----',roomDetails);
+        const roomMembers = await RoomMember.findAll({
+            where : {roomId, userId : {
+                [Op.ne]: userId
+            }}
+        })
+        const x = roomMembers.map(e => e.userId)
+        console.log(x);
+        
+        const messagersIds = [...new Set(x)]
+        console.log('roomMember----',roomMembers);
+        console.log(userId,...messagersIds);
+        
+        const message = await Message.findAll({where : {roomId : roomId,
+            senderId : {
+                [Op.in] : [userId,...messagersIds]
+            }
+        }})
+        console.log(message);
+        
+        // 3 message retrival - room id -> mesages
     // get room data
     // process room data and tranform it
 }
