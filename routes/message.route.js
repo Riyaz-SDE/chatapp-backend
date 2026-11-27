@@ -7,7 +7,9 @@ const router = require('express').Router()
 
 router.get('/:roomId/message',messageSchema, controller.messageSend) // message pagination
 router.post('/:roomId/message',messageSchema, controller.messageSend) // send message
-router.delete('/message/:messageId',messageSchema, controller.messageSend) // read message
+router.patch('/:roomId/message/read',messageSchema, controller.messageSend) // update message
+router.get('/message/:messageId',messageSchema, controller.messageSend) // read message
+router.delete('/message/:roomId',messageSchema, controller.messageSend) // delete message
 
 
 async function assertMember(roomId, userId) {

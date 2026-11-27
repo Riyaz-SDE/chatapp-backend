@@ -13,7 +13,7 @@ router.get('/demo/v1',(req,res) => {res.json({ok : true})})
 /** auth api */ // needs to be finished
 router.use('/auth',require('../feature/auth/auth.route'))
 
-/** room apis */  // almost done
+/** room apis */  // almost done -> completed
 router.use('/room',protected,require('./room.route'))
 
 /** message api */  // almost done
